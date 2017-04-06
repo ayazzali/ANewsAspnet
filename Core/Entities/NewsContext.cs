@@ -13,10 +13,10 @@ namespace Core.Entities
         {
         }
         
-        public DbSet<TSource> TFavoriteNews { get; set; }
-        public DbSet<TLogin> TLogin { get; set; }
-        public DbSet<TArticle> TParsedNews { get; set; }
+        public DbSet<TSource> TSources { get; set; }
+        public DbSet<TLogin> TLogin { get; set; }//todo s
         public DbSet<TPreferableWords> TFavoriteWords { get; set; }
+        public DbSet<TArticle> TParsedNews { get; set; }
 
         #region SaveChanges
         public override int SaveChanges()
@@ -122,7 +122,8 @@ namespace Core.Entities
     public class TArticle: BaseEntity
     {
         public string Data { get; set; }
-
+        public string OwnLink { get; set; }
+        public string Title { get; set; }//description at google.com
         /// <summary>
         /// structure of data-news
         /// </summary>

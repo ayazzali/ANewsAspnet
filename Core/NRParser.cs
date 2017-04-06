@@ -7,15 +7,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Core
 {
     public static class  NRParser
     {
-
+        static Logger log = LogManager.GetCurrentClassLogger();
         public static ManualResetEvent allDone = new ManualResetEvent(false);
         static string htmlStr;
-        public static List<string> GetInfoBySearchStr(string url)
+        static StreamReader htmlStream;
+        public static Dictionary<string, string> GetInfoBySearchStr(string url)
         {
             string request = "";//За 24 часа", "&tbs=qdr:d
             string searchRequest = "https://www.google.ru/search?q=" + request.Trim().Replace(" ", "+")
@@ -26,18 +28,48 @@ namespace Core
             string sLine = GetHtmlCode(searchRequest);
             Console.WriteLine(sLine);
 
-            string pattern = @"<h3 class=""r""><a href=[a-z-A-Z;\?0-9=//\.:"" ]*&amp;";
-            var amount = new Regex(pattern).Matches(sLine)
-                .Cast<Match>()
-                .Select(m => m.Value)
-                .ToArray();
+            Dictionary<string,string>result = new Dictionary<string, string>();
+            #region old
+            //string pattern = @"<h3 class=""r""><a href=[a-z-A-Z;\?0-9=//\.:"" ]*&amp;";//<span class="st">
+            //var amount = new Regex(pattern).Matches(sLine)
+            //    .Cast<Match>()
+            //    .Select(m => m.Value)
+            //    .ToArray();
 
-            List<string> result = new List<string>();
-            foreach (string x in amount)
+            //foreach (string x in amount)
+            //{
+            //    result.Add(x.Substring(30, x.Length - 35));
+            //}
+            #endregion
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.Load(htmlStream);
+
+            var gs = doc.DocumentNode.SelectNodes("//div[@class='g']");
+            foreach (var g in gs)
             {
-                result.Add(x.Substring(30, x.Length - 35));
-            }
+                try
+                {
+                    var src = g.SelectSingleNode(".//h3[@class='r']/a").Attributes["href"].Value;
+                    var almostUsefulSrcCount = src.IndexOf("&amp");
+                    src = src.Substring(7, almostUsefulSrcCount-7);
 
+                    var description = g.SelectSingleNode(".//span[@class='st']").InnerText;
+                    description = description.Substring(0, description.Length - 9);//убираем мусор 
+                    var t=description.LastIndexOf('.');
+                    description = description.Substring(0, t);
+                    result.Add(src,description);//todo
+                }
+                catch(Exception ex) { log.Error(ex); }
+                
+                    
+            }
+            if (result.Count == 0)
+            {
+                log.Warn("мы ничего не распарсили у гугла по запросу: " + searchRequest);
+                System.IO.File.WriteAllText(
+                    "C:\\Temp\\News\\badGooglePages\\"+DateTime.Now.ToShortTimeString()+".html"
+                    , sLine);
+            }
             return result;
         }
 
@@ -61,8 +93,10 @@ namespace Core
             //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             StreamReader sr = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding("windows-1251"));//
-            string reader = sr.ReadToEnd();
-            htmlStr = reader;
+            htmlStream = sr;
+
+            //string reader = sr.ReadToEnd();
+            //htmlStr = reader;
             allDone.Set();
         }
 

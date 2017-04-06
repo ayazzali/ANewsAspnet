@@ -1,30 +1,60 @@
-﻿@{
+﻿@using Core.Enums;
+@using Core.Entities;
+@{
     ViewBag.Title = "Home Page";
 }
 
 
+<h3>GetNews</h3>
+@*@using (Html.BeginForm("news", "home"))
+    {*@
 
+<input type="text" name="login" id="login" value="a" />
+@*<input type="text" id="source" />*@
+<input type="button" value="addLogin" onclick="addLogin()" />
+<input type="button" value="GiveNewsJSON" onclick="GiveNews()" />
+<input type="submit" value="Give me News" />
+@*}*@
 
-<input type="text" id="login" />
-<input type="text" id="source" />
-<input type="button" name="addLogin" onclick="addLogin()" />
-<input type="button" name="addSource" onclick="addSource()" />
+<hr />
+<h3>addSource</h3>
+<p>AddSource(string path, SourceType type, string login)</p>
+@using (Html.BeginForm("AddSource", "home"))
+{
+    <input type="text" name="login" value="a" />
+    <input type="text" name="path" />
+    @Html.DropDownList("type",
+               EnumHelper.GetSelectList(typeof(SourceType)))
+    <input type="submit" />
+}
+
+@*<hr />
+<h3>addSource</h3>
+<p>AddSource(string path, SourceType type, string login)</p>
+@using (Html.BeginForm("AddSource", "home"))
+{
+    <input type="text" name="login" value="a" />
+    <input type="text" />
+    <input type="submit" />
+}
+
+<hr />
+<h3>addSource</h3>
+<p>AddSource(string path, SourceType type, string login)</p>
+@using (Html.BeginForm("AddSource", "home"))
+{
+    <input type="text" name="login" value="a" />
+    <input type="text" />
+    <input type="submit" />
+}*@
 
 <script>
     function addLogin() {
-        fetch("addlogin?login=" + document.getElementById("login").value, {
+        fetch("home/addlogin?login=" + document.getElementById("login").value, {
             method: "post",
             creditionals: "same-origin"
-        }).then(function (response) { alert(response.text()); })
-    }
-
-    function addSource() {
-        var l = document.getElementById("login").value;
-        var s = document.getElementById("source").value;
-        fetch("addsource?login=" + l + "&data=" + s + "&type=2", {//link
-            method: "post",
-            creditionals: "same-origin"
-        }).then(function (response) { alert(response.text()); })
+        }).then(function (response) { return response.text(); })
+            .then(function (bool) { alert(bool);})
     }
 
 
@@ -57,3 +87,482 @@
         <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+<h1 style="text-align:center">
+    Audio-News-BetaV6.01 [можете использовать свои RSS]<img src="rss.png">
+
+</h1>
+
+<!--<audio src='http://tts.voicetech.yandex.net/generate?text="Законопроект%20должен    должна%20была%20попасть%20под%20действие%20законопроекта."&format=mp3&lang=ru-RU&speaker=zahar&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
+
+ controls preload
+
+>Тег audio не поддерживается вашим браузером.
+
+</audio>-->
+
+
+
+
+
+<form id="customSettings" name="customSettings">
+
+    <p>
+        <b>
+            Если хотите выбрать другие новости, то вставьте ссылку на RSS( в
+
+            следующее поле), можете выбрать отсюда <a href="https://news.yandex.ru/export.html">https://news.yandex.ru/export.html</a>
+        </b><br>
+
+
+
+        <input name="RssUri" placeholder="вашу ссылку на RSS" type="text">
+
+        <input onclick="rememberRssUri()" type="submit" value="Подтвердить выбор RSS">
+    </p>
+
+
+
+
+
+    <p>
+        <b>Ниже можно выбрать другой голос:</b>
+
+    </p>
+
+
+
+
+
+    <p>
+        <input name="speaker" type="radio" value="jane">женский голос jane<br>
+
+        <input name="speaker" type="radio" value="omazh">женский голос omazh<br>
+
+        <input name="speaker" type="radio" value="zahar">мужские голос zahar<br>
+
+        <input name="speaker" type="radio" value="ermil">мужской голос ermil
+    </p>
+
+
+
+
+
+    <p>
+        <input onclick="rememberSpeaker()" type="submit" value="Подтвердить выбор голоса">
+
+    </p>
+
+</form>
+
+<audio controls="" id='audioRss' preload="" style="transform: scaleY(1.5);margin:0 5%;">
+    Тег audio не поддерживается вашим
+
+    браузером.
+</audio>
+
+
+
+<div class="help-tip" id="rss">
+
+    ng.ru-RssНовости(по-умолчанию, можете свою выбрать-она запомнится на месяц(с
+
+    помощью cookie)):<br>
+
+    <br>
+
+</div>
+
+
+
+
+
+<div id="testZone">
+
+</div>
+
+<script type="text/javascript">
+
+    //var json;
+    function tZ(str) { document.getElementById('testZone').innerText += "\n" + str; }
+    function GiveNews() {
+        //only parse on the server
+        var l = document.getElementById("login").value;
+        fetch("home/PARSE1?login=" + l, {
+            method: "post",
+            creditionals: "same-origin"
+        }).then(function (r) {
+            //ждём ответа пока распарсит сервак
+            //give
+            fetch("home/News?login=" + l, {//link
+                method: "post",
+                creditionals: "same-origin"
+            }).then(function (response) {
+                return response.json();
+            })
+                .then(function (json) {
+                    //alert(json);
+                    for (s in json) {
+
+                        var data = document.getElementById("dataOfNews");
+                        data.innerHTML += "<br>"
+                        data.innerHTML += json[s].Link;
+                        if (json[s].Type == "1@*@{ SourceType.Rss as int}*@") {
+                            getRssBySite(json[s].Link).then(function (data) {
+
+                                data.forEach(function (item, i, arr) {
+                                    var div = document.createElement('div')
+                                    div.innerHTML = item.description
+                                    document.getElementById('rss').innerHTML += '<p><a href="' + item.link + '" title="' + div.innerText + '"' + '>' + item.title + '<\/a><\/p>'
+                                });
+                                rssItems = rssItems.concat(data)
+                                startPlaying()
+                            })
+                            continue
+                        }
+
+                        for (itemCount in json[s].TArticles) {
+
+                            //var desc = json[s].TArticles[itemCount].Data;
+                            var item = json[s].TArticles[itemCount];
+                            var buf = new Object();
+                            buf.link = item.OwnLink;
+                            buf.description = item.Data
+                            buf.title = item.Title
+
+                            rssItems.push(buf)
+                            //data.innerHTML += json[s].TArticles[item].Data;
+                            document.getElementById('rss').innerHTML += '<p><a href="' + item.OwnLink + '" title="' + item.Data + '"' + '>' + item.Title + '<\/a><\/p>'
+
+                            //rssItems.forEach(function(item, i, arr) {
+
+                            //    document.getElementById('rss').innerHTML+='<p><a href="'+item.link+'" title="'+item.description+'"'+'>'+item.title+'<\/a><\/p>'
+                            //}
+                        }
+                        startPlaying();
+
+                    }
+                })
+        })
+
+    }
+
+    /*document.onkeypress = function(e) {
+
+	   // спец. сочетание - не обрабатываем
+
+	   if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+
+
+	   var char = getChar(e);
+
+
+
+	   if (!char) return; // спец. символ - не обрабатываем
+
+
+
+	   this.value = char.toUpperCase();
+
+
+
+	   return false;
+
+	 };*/
+
+    window.onkeyup = function (e) {
+
+        console.log(e.keyCode + " onkeyup")
+
+        if (e.keyCode == 32) {// нажат пробел(отпущен)
+
+            var t = document.getElementById('audioRss')
+
+            if (t.paused)
+
+                t.play()
+
+            else
+
+                t.pause()
+
+            //e.stopPropagation();
+
+            //e.preventDefault();
+
+        }
+
+        return false;
+
+    }
+
+    function rememberRssUri() {
+
+        var expires = new Date();//now
+
+        // set time to one month (31 days) in the future
+
+        expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24 * 31);
+
+        setCookie('RssUri', customSettings.RssUri.value, expires);
+
+    }
+
+    function rememberSpeaker() {
+
+        SPEAKER = customSettings.speaker.value;
+
+        if (SPEAKER != '') {
+
+            var expires = new Date()//now
+
+            // set time to one month (31 days) in the future
+
+            expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24 * 31)
+
+            setCookie("speaker", SPEAKER, expires)
+
+            //document.cookie = 'speaker=' + escape(SPEAKER);
+
+
+
+        }
+
+    }
+
+
+    function getRssBySite(siteUriRss) {//https://news.yandex.ru/politics.rss
+
+        var query = 'select *from rss where url="' + siteUriRss + '"'//'select * from html where url="'+siteUriRss+'" and xpath="*"'
+
+        var url = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURI(query) + '&format=json';//&callback=callback';
+
+        return fetch(url).then(function (r) { return r.json() })
+         .then(function (data) {//json
+
+             console.log(data); //сам текст ответа находится в data.result[0]
+
+             return data.query.results.item;
+
+             rssItems = data.query.results.item;
+
+
+             rssItems.forEach(function (item, i, arr) {
+
+                 document.getElementById('rss').innerHTML += '<p><a href="' + item.link + '" title="' + item.description + '"' + '>' + item.title + '<\/a><\/p>'
+
+                 //alert( i + ": " + item + " (массив:" + arr + ")" );'<\/BR>'
+
+             });
+
+         })
+
+        //var script = document.createElement('script');
+
+        //script.src = url;//запускаем скрипт с сайта query.yahooapis.com (ответ получает function callback)
+
+        /////fetch(url)
+
+        //document.body.appendChild(script);
+
+    }
+    //удалить
+    //function callback(data) {//записываем в XMLrss наш ответ
+
+    window.onload = function () {
+        var aud = document.getElementById("audioRss");
+        startPlaying()
+
+        aud.addEventListener('ended', function (e) {
+            next_sound()
+        });
+        
+        /*
+        //ниже обязательно назначаем обработку события:
+
+        //          'canplaythrough' - Скрипт выполняется, когда медиа может быть проиграно до конца,
+
+        //          без остановок для буферизации
+
+
+
+        //aud.addEventListener('canplaythrough', function(e){//aud.play()
+
+        //});*/
+    }
+    function startPlaying() {
+            
+        var aud = document.getElementById("audioRss");
+        //if (!aud.src)
+        //    return
+        if (rssItems.length>0) {
+
+            rssItems[counterAud].ttsSrc = 'http://tts.voicetech.yandex.net/generate?text=' + encodeURIComponent(rssItems[counterAud].title) + '&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
+            aud.src = rssItems[counterAud].ttsSrc;
+            counterAud++;
+            aud.autoplay = true;
+        }
+        //else
+        //    aud.src = 'http://tts.voicetech.yandex.net/generate?text=Привет&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
+    }
+    function next_sound() {
+        var aud = document.getElementById("audioRss");
+        rssItems[counterAud].ttsSrc = 'http://tts.voicetech.yandex.net/generate?text=' + encodeURIComponent(rssItems[counterAud].title) + '&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
+
+        aud.src = rssItems[counterAud].ttsSrc;
+
+        aud.play()
+
+        counterAud++;
+
+    }
+
+    function setCookie(name, value, expires, path, domain, secure) {
+
+        //УСТАНОВКИ ЗНАЧЕНИЯ COOKIE
+
+        // name - имя cookie
+
+        // value - значение cookie
+
+        // [expires] - дата окончания действия cookie (по умолчанию - до конца сессии)
+
+        // [path] - путь, для которого cookie действительно (по умолчанию - документ, в котором значение было установлено)
+
+        // [domain] - домен, для которого cookie действительно (по умолчанию - домен, в котором значение было установлено)
+
+        // [secure] - логическое значение, показывающее требуется ли защищенная передача значения cookie
+
+        caution = true;
+
+        var curCookie = name + "=" + escape(value) +
+
+                ((expires) ? "; expires=" + expires.toGMTString() : "") +
+
+                ((path) ? "; path=" + path : "") +
+
+                ((domain) ? "; domain=" + domain : "") +
+
+                ((secure) ? "; secure" : "")
+
+        if (!caution || (name + "=" + escape(value)).length <= 4000)
+
+            document.cookie = curCookie
+
+        else
+
+            if (confirm("Cookie превышает 4KB и будет вырезан !"))
+
+                document.cookie = curCookie
+
+    }
+
+    function getCookie(name) {// name - имя считываемого cookie
+
+        var prefix = name + "="
+
+        var cookieStartIndex = document.cookie.indexOf(prefix)
+
+        if (cookieStartIndex == -1)
+
+            return null
+
+        var cookieEndIndex = document.cookie.indexOf(";", cookieStartIndex + prefix.length)
+
+        if (cookieEndIndex == -1)
+
+            cookieEndIndex = document.cookie.length
+
+        return unescape(document.cookie.substring(cookieStartIndex + prefix.length, cookieEndIndex))
+
+    }
+
+    function getAudUrlFromText(url) {//даст локальная ссылка
+        //todo ффильтр по кол. слов
+        return fetch(rssItems[counterAud].ttsSrc)
+         .then(function (r) { return r.blob() })
+         .then(function (blob) {
+             console.log(blob)
+             return (window.URL || window.webkitURL).createObjectURL(blob)
+         })
+    }//.then(function(url){
+
+
+
+    var XMLrss;
+
+    var rssItems = new Array()//Object();
+
+    var RssUri;
+
+    var counterAud = 0;
+    try {
+
+        RssUri = getCookie('RssUri');
+
+        if (RssUri == "" || RssUri == null) RssUri = "http://www.ng.ru/rss/";
+
+    }
+
+    catch (e) {
+
+        alert('Извините, мой сервис не адаптирован под вашу RSS, но от яндекс и ng работает точно');
+
+        RssUri = "http://www.ng.ru/rss/";
+
+    }
+
+    //getRssBySite(RssUri);
+
+
+
+    var SPEAKER = "zahar"
+
+    try {
+
+        SPEAKER = getCookie('speaker');
+
+        if (SPEAKER == "" || SPEAKER == null)
+
+            SPEAKER = "zahar";
+
+    }
+
+    catch (e) { SPEAKER = "zahar"; }
+
+
+
+</script>
+
+
+
+<div style="text-align:center">
+
+    <p>© 2016 Ayazzali</p>
+
+</div>
+
+
+
+
+
+
+
+
+
+<div id="dataOfNews">
+
+
+</div>
+
+
+
