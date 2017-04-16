@@ -4,102 +4,59 @@
     ViewBag.Title = "Home Page";
 }
 
-
-<h3>GetNews</h3>
-@*@using (Html.BeginForm("news", "home"))
-    {*@
-
-<input type="text" name="login" id="login" value="a" />
-@*<input type="text" id="source" />*@
-<input type="button" value="addLogin" onclick="addLogin()" />
-<input type="button" value="GiveNewsJSON" onclick="GiveNews()" />
-<input type="submit" value="Give me News" />
-@*}*@
-
-<hr />
-<h3>addSource</h3>
-<p>AddSource(string path, SourceType type, string login)</p>
-@using (Html.BeginForm("AddSource", "home"))
-{
-    <input type="text" name="login" value="a" />
-    <input type="text" name="path" />
-    @Html.DropDownList("type",
-               EnumHelper.GetSelectList(typeof(SourceType)))
-    <input type="submit" />
-}
-
-@*<hr />
-<h3>addSource</h3>
-<p>AddSource(string path, SourceType type, string login)</p>
-@using (Html.BeginForm("AddSource", "home"))
-{
-    <input type="text" name="login" value="a" />
-    <input type="text" />
-    <input type="submit" />
-}
-
-<hr />
-<h3>addSource</h3>
-<p>AddSource(string path, SourceType type, string login)</p>
-@using (Html.BeginForm("AddSource", "home"))
-{
-    <input type="text" name="login" value="a" />
-    <input type="text" />
-    <input type="submit" />
-}*@
-
-<script>
-    function addLogin() {
-        fetch("home/addlogin?login=" + document.getElementById("login").value, {
-            method: "post",
-            creditionals: "same-origin"
-        }).then(function (response) { return response.text(); })
-            .then(function (bool) { alert(bool);})
-    }
-
-
-</script>
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
 <h1 style="text-align:center">
-    Audio-News-BetaV6.01 [можете использовать свои RSS]<img src="rss.png">
+    Audio-News-BetaV6.01 [можете использовать свои RSS]
+    <img src="rss.png">
 
 </h1>
+<br /><br />
+@*<label></label>
+<input type="text" name="login" id="login" value="default" />
+@*<input type="text" id="source" />*@
+@*<input type="button" value="EnterLogin" onclick="addLogin()" />*@
+@*<input type="button" value="GiveNewsJSON" onclick="GiveNews()" />
+    <input type="submit" value="Give me News" />*@
+
+
+<hr />
+<h3>Введите и выберите тип(ссылка на сайт или ссылка на rss) источника новостей</h3><br />
+
+<p hidden>AddSource(string path, SourceType type, string login)</p>
+@using (Html.BeginForm("AddSource", "home"))
+{
+    <label>Ваш логин(если вы здесь впервые, то введите новый):</label>
+    <input type="text" name="login"id="login" value="default" />
+    <br />
+    <label>Тип источника</label>
+    @Html.DropDownList("type",
+               EnumHelper.GetSelectList(typeof(SourceType)))
+    <br />
+    <label>Cсылка на сайт или .rss</label>
+    <input type="text" name="path" />
+    <br />
+    <input type="submit" value="Добавить источник" />
+}
+<hr />
+
+@*<hr />
+    <h3>addSource</h3>
+    <p>AddSource(string path, SourceType type, string login)</p>
+    @using (Html.BeginForm("AddSource", "home"))
+    {
+        <input type="text" name="login" value="a" />
+        <input type="text" />
+        <input type="submit" />
+    }
+
+    <hr />
+    <h3>addSource</h3>
+    <p>AddSource(string path, SourceType type, string login)</p>
+    @using (Html.BeginForm("AddSource", "home"))
+    {
+        <input type="text" name="login" value="a" />
+        <input type="text" />
+        <input type="submit" />
+    }*@
 
 <!--<audio src='http://tts.voicetech.yandex.net/generate?text="Законопроект%20должен    должна%20была%20попасть%20под%20действие%20законопроекта."&format=mp3&lang=ru-RU&speaker=zahar&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
 
@@ -108,149 +65,175 @@
 >Тег audio не поддерживается вашим браузером.
 
 </audio>-->
-
-
-
-
-
 <form id="customSettings" name="customSettings">
 
-    <p>
-        <b>
-            Если хотите выбрать другие новости, то вставьте ссылку на RSS( в
+    @*<p>
+            <b>
+                Если хотите выбрать другие новости, то вставьте ссылку на RSS( в
 
-            следующее поле), можете выбрать отсюда <a href="https://news.yandex.ru/export.html">https://news.yandex.ru/export.html</a>
-        </b><br>
+                следующее поле), можете выбрать отсюда <a href="https://news.yandex.ru/export.html">https://news.yandex.ru/export.html</a>
+            </b>
+            <br>
 
+            <input name="RssUri" placeholder="вашу ссылку на RSS" type="text">
 
-
-        <input name="RssUri" placeholder="вашу ссылку на RSS" type="text">
-
-        <input onclick="rememberRssUri()" type="submit" value="Подтвердить выбор RSS">
-    </p>
-
-
-
-
-
+            <input onclick="rememberRssUri()" type="submit" value="Подтвердить выбор RSS">
+        </p>*@
     <p>
         <b>Ниже можно выбрать другой голос:</b>
-
     </p>
-
-
-
-
-
     <p>
-        <input name="speaker" type="radio" value="jane">женский голос jane<br>
-
-        <input name="speaker" type="radio" value="omazh">женский голос omazh<br>
-
-        <input name="speaker" type="radio" value="zahar">мужские голос zahar<br>
-
+        <input name="speaker" type="radio" value="jane">женский голос jane
+        <br>
+        <input name="speaker" type="radio" value="omazh">женский голос omazh
+        <br>
+        <input name="speaker" type="radio" value="zahar">мужские голос zahar
+        <br>
         <input name="speaker" type="radio" value="ermil">мужской голос ermil
     </p>
-
-
-
-
-
     <p>
         <input onclick="rememberSpeaker()" type="submit" value="Подтвердить выбор голоса">
-
     </p>
-
 </form>
 
 <audio controls="" id='audioRss' preload="" style="transform: scaleY(1.5);margin:0 5%;">
-    Тег audio не поддерживается вашим
-
-    браузером.
+    Тег audio не поддерживается вашим    браузером. Установите  гугл хром например.
 </audio>
 
+<div class="help-tip" id="rss"></div>
 
-
-<div class="help-tip" id="rss">
-
-    ng.ru-RssНовости(по-умолчанию, можете свою выбрать-она запомнится на месяц(с
-
-    помощью cookie)):<br>
-
-    <br>
-
-</div>
-
-
-
-
-
-<div id="testZone">
-
-</div>
+<div id="testZone"></div>
 
 <script type="text/javascript">
 
+    //settings
+
+    var XMLrss;
+
+    var rssItems = new Array()//Object();
+
+    var SPEAKER = "zahar"//default
+    gs()
+    function gs() {
+        try {
+
+            SPEAKER = getCookie('speaker');
+
+            if (SPEAKER == "" || SPEAKER == null)
+
+                SPEAKER = "zahar";
+
+        }
+
+        catch (e) { SPEAKER = "zahar"; }
+    }
+
+    var login = document.getElementById("login").value;
+    t = getCookie('login')
+    if (t) login = t;
+
+    var counterAud = 0
+
+    //var RssUri -рудимент
+    ////getSources fromCookie maybe
+
+    //getnews online
+    GiveNews(login).then(function (json) {
+        if (json.length == 0)
+            alert("У вас нет ни одного сайта(источника) новостей, мы не знаем ваших предпочтений и не можем их вам воспроизести")
+        for (s in json) {
+
+            var data = document.getElementById("dataOfNews");
+            data.innerHTML += "<br>"
+            data.innerHTML += json[s].Link;
+            if (json[s].Type == "1@*@{ SourceType.Rss as int}*@") {
+                getRssBySite(json[s].Link).then(function (data) {
+
+                    data.forEach(function (item, i, arr) {
+                        var div = document.createElement('div')
+                        div.innerHTML = item.description
+                        document.getElementById('rss').innerHTML += '<p><a href="' + item.link + '" title="' + div.innerText + '"' + '>' + item.title + '<\/a><\/p>'
+                    });
+                    rssItems = rssItems.concat(data)
+                    startPlaying()
+                })
+                continue
+            }
+
+            for (itemCount in json[s].TArticles) {
+
+                //var desc = json[s].TArticles[itemCount].Data;
+                var item = json[s].TArticles[itemCount];
+                var buf = new Object();
+                buf.link = item.OwnLink;
+                buf.description = item.Data
+                buf.title = item.Title
+                buf.pubDate = item.Created
+                buf.Id = item.Id
+
+                rssItems.push(buf)
+                //data.innerHTML += json[s].TArticles[item].Data;
+                document.getElementById('rss').innerHTML += '<p><a href="' + item.OwnLink + '" title="' + item.Data + '"' + '>' + item.Title + '<\/a><\/p>'
+
+                //rssItems.forEach(function(item, i, arr) {
+
+                //    document.getElementById('rss').innerHTML+='<p><a href="'+item.link+'" title="'+item.description+'"'+'>'+item.title+'<\/a><\/p>'
+                //}
+            }
+            startPlaying();
+        }
+    })
+
+    //offline todo
+
+    //filter of time //~ inplay()
+
+    //удалить куки старше 2 дней//~
+
+
+
+
+
+
+
+
+
     //var json;
     function tZ(str) { document.getElementById('testZone').innerText += "\n" + str; }
-    function GiveNews() {
+    function addLogin() {
+        fetch("@Url.Action("addlogin","home")?login=" + document.getElementById("login").value, {
+            method: "post",
+            creditionals: "same-origin"
+        }).then(function (response) { return response.text(); })
+            .then(function (bool) {
+                console.log(bool);
+                if (bool) {
+                    setCookieDay(
+                        'login',
+                        document.getElementById("login").value,
+                        30)
+                    location.reload()
+                }
+            })
+    }
+
+    function GiveNews(l) {//l=login
         //only parse on the server
-        var l = document.getElementById("login").value;
-        fetch("home/PARSE1?login=" + l, {
+        return fetch("/home/parse1?login=" + l, {
             method: "post",
             creditionals: "same-origin"
         }).then(function (r) {
             //ждём ответа пока распарсит сервак
             //give
-            fetch("home/News?login=" + l, {//link
+            return fetch("/home/News?login=" + l, {//link
                 method: "post",
                 creditionals: "same-origin"
             }).then(function (response) {
                 return response.json();
             })
-                .then(function (json) {
-                    //alert(json);
-                    for (s in json) {
 
-                        var data = document.getElementById("dataOfNews");
-                        data.innerHTML += "<br>"
-                        data.innerHTML += json[s].Link;
-                        if (json[s].Type == "1@*@{ SourceType.Rss as int}*@") {
-                            getRssBySite(json[s].Link).then(function (data) {
 
-                                data.forEach(function (item, i, arr) {
-                                    var div = document.createElement('div')
-                                    div.innerHTML = item.description
-                                    document.getElementById('rss').innerHTML += '<p><a href="' + item.link + '" title="' + div.innerText + '"' + '>' + item.title + '<\/a><\/p>'
-                                });
-                                rssItems = rssItems.concat(data)
-                                startPlaying()
-                            })
-                            continue
-                        }
 
-                        for (itemCount in json[s].TArticles) {
-
-                            //var desc = json[s].TArticles[itemCount].Data;
-                            var item = json[s].TArticles[itemCount];
-                            var buf = new Object();
-                            buf.link = item.OwnLink;
-                            buf.description = item.Data
-                            buf.title = item.Title
-
-                            rssItems.push(buf)
-                            //data.innerHTML += json[s].TArticles[item].Data;
-                            document.getElementById('rss').innerHTML += '<p><a href="' + item.OwnLink + '" title="' + item.Data + '"' + '>' + item.Title + '<\/a><\/p>'
-
-                            //rssItems.forEach(function(item, i, arr) {
-
-                            //    document.getElementById('rss').innerHTML+='<p><a href="'+item.link+'" title="'+item.description+'"'+'>'+item.title+'<\/a><\/p>'
-                            //}
-                        }
-                        startPlaying();
-
-                    }
-                })
         })
 
     }
@@ -279,39 +262,27 @@
 
 	 };*/
 
-    window.onkeyup = function (e) {
 
+    window.onkeyup = function (e) {//(отпущен)
         console.log(e.keyCode + " onkeyup")
-
-        if (e.keyCode == 32) {// нажат пробел(отпущен)
-
+        if (e.keyCode == 32) {// нажат пробел
             var t = document.getElementById('audioRss')
-
             if (t.paused)
-
                 t.play()
-
             else
-
                 t.pause()
-
-            //e.stopPropagation();
-
-            //e.preventDefault();
-
+            e.preventDefault();
         }
-
-        return false;
-
     }
+    window.onkeydown = function (event) {
+        console.log(event.keyCode + " onkeydown")
+        if (event.keyCode === 32) {
+            event.preventDefault();
+        }
+    };
 
     function rememberRssUri() {
 
-        var expires = new Date();//now
-
-        // set time to one month (31 days) in the future
-
-        expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24 * 31);
 
         setCookie('RssUri', customSettings.RssUri.value, expires);
 
@@ -339,7 +310,7 @@
 
     }
 
-
+    //NOT using
     function getRssBySite(siteUriRss) {//https://news.yandex.ru/politics.rss
 
         var query = 'select *from rss where url="' + siteUriRss + '"'//'select * from html where url="'+siteUriRss+'" and xpath="*"'
@@ -385,7 +356,7 @@
         aud.addEventListener('ended', function (e) {
             next_sound()
         });
-        
+
         /*
         //ниже обязательно назначаем обработку события:
 
@@ -397,15 +368,16 @@
 
         //aud.addEventListener('canplaythrough', function(e){//aud.play()
 
-        //});*/
+        //});*///
     }
     function startPlaying() {
-            
+
         var aud = document.getElementById("audioRss");
         //if (!aud.src)
         //    return
-        if (rssItems.length>0) {
-
+        if (rssItems.length > 0) {
+            if (aud.src)
+                return
             rssItems[counterAud].ttsSrc = 'http://tts.voicetech.yandex.net/generate?text=' + encodeURIComponent(rssItems[counterAud].title) + '&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
             aud.src = rssItems[counterAud].ttsSrc;
             counterAud++;
@@ -415,6 +387,21 @@
         //    aud.src = 'http://tts.voicetech.yandex.net/generate?text=Привет&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
     }
     function next_sound() {
+        console.log("будет проиграна новость" + (counterAud))
+        DyeCurrentItem()
+        if (rssItems[counterAud].title) {
+            //может уже слушали
+            if (getCookie(rssItems[counterAud].title.substring(0, 40))) {//обрезает ингода поэтому 40
+                counterAud++
+                next_sound()
+                return;
+            }
+            //запись в куки предыдущего ( того, что уже! прослушали)
+            var expires = new Date();
+            expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24 * 3);//3day ~
+            setCookie(rssItems[counterAud].title.substring(0, 40), "1", expires);
+        }
+
         var aud = document.getElementById("audioRss");
         rssItems[counterAud].ttsSrc = 'http://tts.voicetech.yandex.net/generate?text=' + encodeURIComponent(rssItems[counterAud].title) + '&format=mp3&lang=ru-RU&speaker=' + SPEAKER + '&emotion=good&key=edcd3e1e-d96a-4d16-802c-fe9517644cce'
 
@@ -424,8 +411,19 @@
 
         counterAud++;
 
+        function DyeCurrentItem() {
+            var thisHtmlItem = document.evaluate("//a[@@href = '" + rssItems[counterAud].link + "']", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+                .snapshotItem(0)//firstElem
+            thisHtmlItem.style.color = "gray";
+        }
+
     }
 
+    function setCookieDay(name, value, days) {
+        var expires = new Date();
+        expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24 * days);
+        setCookie(name, value, expires)
+    }
     function setCookie(name, value, expires, path, domain, secure) {
 
         //УСТАНОВКИ ЗНАЧЕНИЯ COOKIE
@@ -460,7 +458,7 @@
 
         else
 
-            if (confirm("Cookie превышает 4KB и будет вырезан !"))
+            if (console.log("Cookie превышает 4KB и будет вырезан !"))
 
                 document.cookie = curCookie
 
@@ -497,7 +495,7 @@
     }//.then(function(url){
 
 
-
+    /*
     var XMLrss;
 
     var rssItems = new Array()//Object();
@@ -539,7 +537,7 @@
 
     catch (e) { SPEAKER = "zahar"; }
 
-
+    */
 
 </script>
 

@@ -26,7 +26,7 @@ namespace NewsAspNet.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost]//old
         public bool AddLogin(string login)
         {
             if (db.TLogin.Any(_ => _.Login == login))
@@ -40,14 +40,21 @@ namespace NewsAspNet.Controllers
             return true;
         }
 
-        public bool AddSource(string path, SourceType? type, string login)
+        public ActionResult AddSource(string path, SourceType? type, string login)
         {
-            var user = db.TLogin.FirstOrDefault(_ => _.Login == login);
-            if (user == null) return false;//todo
 
+            var user = db.TLogin.FirstOrDefault(_ => _.Login == login);
+            if (user == null) //return RedirectToAction("Index");// false;//todo
+            {
+                user = new TLogin()
+                {
+                    Login = login
+                };
+                db.TLogin.Add(user);
+            }
             var alreadyExist = user.TSources.Any(_ => _.Link == path);
             if (alreadyExist)
-                return false;
+                return RedirectToAction("Index"); //false;
 
             //MAIN
             var Source = new TSource()
@@ -59,7 +66,7 @@ namespace NewsAspNet.Controllers
             db.SaveChanges();
 
             ViewBag.Message = "Your application description page.";
-            return true;
+            return RedirectToAction("Index");
         }//todo delete
 
 
@@ -115,32 +122,32 @@ namespace NewsAspNet.Controllers
 
 
 
-            var t4=ll.TSources//
+            var t4 = ll.TSources//
                 .Select(_ => new { _.Id, _.Created, _.Link, _.Type, _.TArticles }).ToList();
             var newsNow = db.TParsedNews.Where(_ => _.Created.Day == DateTime.Now.Day);
             var t6 = newsNow.Where(_ => _.TSource.TLogins.Any(l => l.Id == ll.Id))
-                .Select(_=>new { _.TSource })
+                .Select(_ => new { _.TSource })
                 .ToList();
 
             var tt = (from a in db.TSources.Include("TArticles").Where(_ => _.TLogins.Any(l => l.Id == ll.Id))
-                     where true//a.TArticles.Where(_ => _.Created.Day == DateTime.Now.Day)
+                      where true//a.TArticles.Where(_ => _.Created.Day == DateTime.Now.Day)
                       orderby a.Created
-                     select
-                     new
-                     {
-                         a.Id,
-                         a.Created,
-                         a.Link,
-                         a.Type,
-                         a.TArticles
-                     }
-                         //(from b in a.TArticles
-                         //where b.Created.Day==DateTime.Now.Day||a.TArticles.Count==0
-                         //select b)
+                      select
+                      new
+                      {
+                          a.Id,
+                          a.Created,
+                          a.Link,
+                          a.Type,
+                          a.TArticles
+                      }
+                     //(from b in a.TArticles
+                     //where b.Created.Day==DateTime.Now.Day||a.TArticles.Count==0
+                     //select b)
                      ).ToList();
             //var ttt=tt.Where(_=>_.TArticles.)
 
-            
+
             var sourcesAndArticles2 = db.TSources.Include("TArticles").Where(_ => _.TLogins.Any(l => l.Id == ll.Id))//.Where(_=>_.TArticles. .Created.Day == DateTime.Now.Day)
                             .Select(_ => _.TArticles.Where(a => a.Created.Day == DateTime.Now.Day)).ToList();//.Where(_=>_.All(a=>a.Created.Day==DateTime.Now.Day))  .ToList();
 
@@ -173,7 +180,7 @@ namespace NewsAspNet.Controllers
             var byGoogle = ll.TSources.Where(_ => _.Type == (int)SourceType.Url).ToList();
             try
             {
-                var oldestSource = byGoogle.OrderBy(_ => _.TArticles).First();
+                var oldestSource = byGoogle.Last();//todo
                 ParseNReadAndSaveDB(oldestSource);
             }
             catch (Exception ex)
@@ -192,7 +199,7 @@ namespace NewsAspNet.Controllers
                 return null;
             lastGoogleReq = DateTime.Now;
             var urls = NRParser.GetInfoBySearchStr(link);//dictionary
-            
+
 
             var RawItems = new List<string>();
             foreach (var url in urls)
