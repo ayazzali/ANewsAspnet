@@ -115,8 +115,10 @@ namespace NewsAspNet.Controllers
 
             //filter todo
 
-            var sourcesAndArticles = db.TSources.Include("TArticles").Where(_ => _.TLogins.Any(l => l.Id == ll.Id))//.Where(_=>_.TArticles. .Created.Day == DateTime.Now.Day)
-                .Select(_ => new { _.Id, _.Created, _.Link, _.Type, _.TArticles }).ToList();
+            var sourcesAndArticles = db.TSources.Include("TArticles")
+                .Where(_ => _.TLogins.Any(l => l.Id == ll.Id))
+                .OrderByDescending(_=>_.Created)//.Where(_=>_.TArticles. .Created.Day == DateTime.Now.Day)
+                .Select(_ => new { _.Id, _.Created, _.Link, _.Type, _.TArticles }).ToList();//.Where(_=>_.Created>DateTime.Now.AddDays(-2)}
 
             return Json(sourcesAndArticles, JsonRequestBehavior.AllowGet);
 
@@ -205,10 +207,13 @@ namespace NewsAspNet.Controllers
             foreach (var url in urls)
             {
                 var transcoder = new NReadabilityWebTranscoder();
-                bool success;
-
-                string transcodedContent = transcoder.Transcode(url.Key, out success);
-
+                bool success=false;
+                string transcodedContent = "";
+                try
+                {
+                    transcodedContent = transcoder.Transcode(url.Key, out success);
+                }
+                catch (Exception e) { log.Error(url + " не смогли распарсить ", e); }//todo
                 if (success)
                 {
                     var user = db.TLogin.FirstOrDefault(_ => _.Login == _login);

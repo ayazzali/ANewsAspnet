@@ -207,6 +207,7 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ayazzali_ВестникКхти.doc" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

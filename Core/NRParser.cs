@@ -58,10 +58,16 @@ namespace Core
                     var description = g.SelectSingleNode(".//span[@class='st']").InnerText;
                     description = description.Substring(0, description.Length - 9);//убираем мусор 
                     var t = description.LastIndexOf('.');
-                    description = description.Substring(0, t);
+                    if (t != -1)
+                    {
+                        description = description.Substring(0, t);
+                    }
                     result.Add(src, description);//todo
                 }
-                catch (Exception ex) { log.Error(ex); }
+                catch (Exception ex)
+                {
+                    log.Error(ex);
+                }
 
 
             }
